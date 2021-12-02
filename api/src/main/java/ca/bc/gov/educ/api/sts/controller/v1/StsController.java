@@ -14,11 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
 
-/**
- * Student controller
- *
- * @author John Cox
- */
 @RestController
 @Slf4j
 public class StsController implements StsEndpoint {

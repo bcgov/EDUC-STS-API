@@ -8,14 +8,11 @@ import lombok.Getter;
  * @author Marco Villeneuve
  */
 @Getter
-public class ApplicationProperties {
+public final class ApplicationProperties {
+  private ApplicationProperties() {
+    throw new IllegalStateException("Utility class");
+  }
 
-  /**
-   * The constant STUDENT_API.
-   */
-  public static final String STUDENT_API = "STS-API";
-  /**
-   * The constant CORRELATION_ID.
-   */
+  public static final String STS_API = "STS-API";
   public static final String CORRELATION_ID = "correlationID";
 }

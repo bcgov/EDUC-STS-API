@@ -8,9 +8,6 @@ import ca.bc.gov.educ.api.sts.struct.v1.ISDRole;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-/**
- * The interface Student mapper.
- */
 @Mapper(uses = {UUIDMapper.class, LocalDateTimeMapper.class, StringMapper.class})
 @SuppressWarnings("squid:S1214")
 public interface StsMapper {

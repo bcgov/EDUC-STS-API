@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * The type Student mvc config.
- */
 @Configuration
 public class MVCConfig implements WebMvcConfigurer {
 
@@ -19,11 +16,6 @@ public class MVCConfig implements WebMvcConfigurer {
   @Getter(AccessLevel.PRIVATE)
   private final RequestResponseInterceptor requestResponseInterceptor;
 
-  /**
-   * Instantiates a new Student mvc config.
-   *
-   * @param requestResponseInterceptor the student request interceptor
-   */
   @Autowired
   public MVCConfig(final RequestResponseInterceptor requestResponseInterceptor) {
     this.requestResponseInterceptor = requestResponseInterceptor;
