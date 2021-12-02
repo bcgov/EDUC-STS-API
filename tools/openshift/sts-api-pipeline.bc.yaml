@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: 'sts-api-template'
+metadata:
+  name: 'sts-api-template'
+objects:
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      labels:
+        build: sts-api-pipeline
+      name: sts-api-pipeline
+    spec:
+      source:
+        git:
+          ref: master
+          uri: 'https://github.com/bcgov/EDUC-STS-API'
+        type: Git
+      strategy:
+        jenkinsPipelineStrategy:
+          jenkinsfilePath: tools/jenkins/Jenkinsfile-api
