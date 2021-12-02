@@ -41,7 +41,7 @@ pipeline{
             echo sh(returnStdout: true, script: 'env')
           }
 
-          sh "wget -O - https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/main/openshift/common-deployment/deployHelpers.js > deployHelpers.js"
+          sh "wget -O - https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/deployHelpers.js > deployHelpers.js"
           extJSHelper = evaluate readFile('deployHelpers.js')
         }
       }
