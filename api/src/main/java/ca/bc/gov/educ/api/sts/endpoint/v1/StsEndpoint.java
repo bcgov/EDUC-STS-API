@@ -30,7 +30,7 @@ public interface StsEndpoint {
    * @return the isd login principal
    */
   @GetMapping(value = "/{ssoGuid}")
-  @PreAuthorize("hasAuthority('READ_STS')")
+  @PreAuthorize("hasAuthority('SCOPE_READ_STS')")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "404", description = "NOT FOUND")})
   @Transactional(readOnly = true)
   @Tag(name = "Endpoint to get STs login principal.", description = "STs login principal.")
