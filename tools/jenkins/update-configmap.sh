@@ -1,19 +1,18 @@
 envValue=$1
 APP_NAME=$2
-PEN_NAMESPACE=$3
-COMMON_NAMESPACE=$4
+NAMESPACE=$3
 APP_NAME_UPPER=${APP_NAME^^}
 TZVALUE="America/Vancouver"
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$envValue.apps.silver.devops.gov.bc.ca
 
-SOAM_KC_LOAD_USER_ADMIN=$(oc -n $COMMON_NAMESPACE-$envValue -o json get secret sso-admin-${envValue} | sed -n 's/.*"username": "\(.*\)"/\1/p' | base64 --decode)
-SOAM_KC_LOAD_USER_PASS=$(oc -n $COMMON_NAMESPACE-$envValue -o json get secret sso-admin-${envValue} | sed -n 's/.*"password": "\(.*\)",/\1/p' | base64 --decode)
+SOAM_KC_LOAD_USER_ADMIN=$(oc -n $NAMESPACE-$envValue -o json get secret sso-admin-${envValue} | sed -n 's/.*"username": "\(.*\)"/\1/p' | base64 --decode)
+SOAM_KC_LOAD_USER_PASS=$(oc -n $NAMESPACE-$envValue -o json get secret sso-admin-${envValue} | sed -n 's/.*"password": "\(.*\)",/\1/p' | base64 --decode)
 
-DB_JDBC_CONNECT_STRING=$(oc -n $PEN_NAMESPACE-$envValue -o json get configmaps ${APP_NAME}-${envValue}-setup-config | sed -n 's/.*"DB_JDBC_CONNECT_STRING": "\(.*\)",/\1/p')
-DB_PWD=$(oc -n $PEN_NAMESPACE-$envValue -o json get configmaps ${APP_NAME}-${envValue}-setup-config | sed -n "s/.*\"DB_PWD_${APP_NAME_UPPER}\": \"\(.*\)\",/\1/p")
-DB_USER=$(oc -n $PEN_NAMESPACE-$envValue -o json get configmaps "${APP_NAME}"-"${envValue}"-setup-config | sed -n "s/.*\"DB_USER_${APP_NAME_UPPER}\": \"\(.*\)\",/\1/p")
-SPLUNK_TOKEN=$(oc -n $PEN_NAMESPACE-$envValue -o json get configmaps "${APP_NAME}"-"${envValue}"-setup-config | sed -n "s/.*\"SPLUNK_TOKEN_${APP_NAME_UPPER}\": \"\(.*\)\"/\1/p")
+DB_JDBC_CONNECT_STRING=$(oc -n $NAMESPACE-$envValue -o json get configmaps ${APP_NAME}-${envValue}-setup-config | sed -n 's/.*"DB_JDBC_CONNECT_STRING": "\(.*\)",/\1/p')
+DB_PWD=$(oc -n $NAMESPACE-$envValue -o json get configmaps ${APP_NAME}-${envValue}-setup-config | sed -n "s/.*\"DB_PWD_${APP_NAME_UPPER}\": \"\(.*\)\",/\1/p")
+DB_USER=$(oc -n $NAMESPACE-$envValue -o json get configmaps "${APP_NAME}"-"${envValue}"-setup-config | sed -n "s/.*\"DB_USER_${APP_NAME_UPPER}\": \"\(.*\)\",/\1/p")
+SPLUNK_TOKEN=$(oc -n $NAMESPACE-$envValue -o json get configmaps "${APP_NAME}"-"${envValue}"-setup-config | sed -n "s/.*\"SPLUNK_TOKEN_${APP_NAME_UPPER}\": \"\(.*\)\"/\1/p")
 
 echo Fetching SOAM token
 TKN=$(curl -s \
@@ -109,14 +108,14 @@ PARSER_CONFIG="
 
 echo
 echo Creating config map "$APP_NAME"-config-map
-oc create -n "$PEN_NAMESPACE"-"$envValue" configmap "$APP_NAME"-config-map --from-literal=TZ=$TZVALUE --from-literal=JDBC_URL="$DB_JDBC_CONNECT_STRING" --from-literal=ORACLE_USERNAME="$DB_USER" --from-literal=ORACLE_PASSWORD="$DB_PWD" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --from-literal=SPRING_SHOW_REQUEST_DETAILS=false --from-literal=NATS_CLUSTER="$NATS_CLUSTER" --from-literal=SPRING_JPA_SHOW_SQL="false"  --from-literal=CLIENT_ID="sts-api-service" --from-literal=CLIENT_SECRET="$APIServiceClientSecret"   --from-literal=TOKEN_URL="https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/protocol/openid-connect/token" --from-literal=TOKEN_ISSUER_URL="https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID"  --dry-run -o yaml | oc apply -f -
+oc create -n "$NAMESPACE"-"$envValue" configmap "$APP_NAME"-config-map --from-literal=TZ=$TZVALUE --from-literal=JDBC_URL="$DB_JDBC_CONNECT_STRING" --from-literal=ORACLE_USERNAME="$DB_USER" --from-literal=ORACLE_PASSWORD="$DB_PWD" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --from-literal=SPRING_SHOW_REQUEST_DETAILS=false --from-literal=NATS_CLUSTER="$NATS_CLUSTER" --from-literal=SPRING_JPA_SHOW_SQL="false"  --from-literal=CLIENT_ID="sts-api-service" --from-literal=CLIENT_SECRET="$APIServiceClientSecret"   --from-literal=TOKEN_URL="https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/protocol/openid-connect/token" --from-literal=TOKEN_ISSUER_URL="https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID"  --dry-run -o yaml | oc apply -f -
 
 echo
 echo Setting environment variables for $APP_NAME-main application
-oc -n "$PEN_NAMESPACE-$envValue" set env --from=configmap/"$APP_NAME"-config-map dc/"$APP_NAME"-main
+oc -n "$NAMESPACE-$envValue" set env --from=configmap/"$APP_NAME"-config-map dc/"$APP_NAME"-main
 
 echo Creating config map "$APP_NAME"-flb-sc-config-map
-oc create -n "$PEN_NAMESPACE"-"$envValue" configmap "$APP_NAME"-flb-sc-config-map --from-literal=fluent-bit.conf="$FLB_CONFIG" --from-literal=parsers.conf="$PARSER_CONFIG" --dry-run -o yaml | oc apply -f -
+oc create -n "$NAMESPACE"-"$envValue" configmap "$APP_NAME"-flb-sc-config-map --from-literal=fluent-bit.conf="$FLB_CONFIG" --from-literal=parsers.conf="$PARSER_CONFIG" --dry-run -o yaml | oc apply -f -
 
 echo Removing un-needed config entries
-oc -n "$PEN_NAMESPACE"-"$envValue" set env dc/"$APP_NAME"-main KEYCLOAK_PUBLIC_KEY-
+oc -n "$NAMESPACE"-"$envValue" set env dc/"$APP_NAME"-main KEYCLOAK_PUBLIC_KEY-
