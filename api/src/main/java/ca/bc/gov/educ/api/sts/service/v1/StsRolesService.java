@@ -47,6 +47,6 @@ public class StsRolesService {
    */
   public List<ISDLoginRolesView> getLoginRolesBySsoGuid(final String ssoGuid) {
     val principalID = this.ssoGuidViewRepository.findBySsoGuid(ssoGuid).orElseThrow(() -> new EntityNotFoundException(ISDLoginSSOGuidView.class, "ssoGuid", ssoGuid)).getPrincipalId();
-    return this.rolesViewRepository.findAllByIsdLoginRolesIDPrincipalId(principalID);
+    return this.rolesViewRepository.findAllByIsdLoginRolesID_PrincipalId(principalID);
   }
 }
