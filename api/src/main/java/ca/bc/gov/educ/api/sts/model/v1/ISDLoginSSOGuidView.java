@@ -27,7 +27,7 @@ public class ISDLoginSSOGuidView implements Serializable {
    * The Principal id.
    */
   @Id
-  @Column(name = "PRINICIPALID")
+  @Column(name = "PRINCIPALID")
   String principalId;
 
   /**
