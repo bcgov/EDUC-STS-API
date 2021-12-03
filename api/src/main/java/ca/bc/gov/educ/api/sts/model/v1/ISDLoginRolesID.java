@@ -23,7 +23,7 @@ public class ISDLoginRolesID implements Serializable {
   /**
    * The Principal id.
    */
-  @Column(name = "PRINICIPALID")
+  @Column(name = "PRINCIPALID")
   @NonNull
   String principalId;
 
