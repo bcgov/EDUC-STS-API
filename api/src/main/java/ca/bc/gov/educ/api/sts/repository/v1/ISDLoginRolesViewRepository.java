@@ -15,8 +15,8 @@ public interface ISDLoginRolesViewRepository extends JpaRepository<ISDLoginRoles
   /**
    * Find all by isd login roles id list.
    *
-   * @param isdLoginRolesID the isd login roles id
+   * @param principalID
    * @return the list
    */
-  List<ISDLoginRolesView> findAllByIsdLoginRolesID(ISDLoginRolesID isdLoginRolesID);
+  List<ISDLoginRolesView> findAllByIsdLoginRolesIDPrincipalId(String principalID);
 }
